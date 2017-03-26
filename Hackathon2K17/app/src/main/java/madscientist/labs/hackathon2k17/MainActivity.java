@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.os.Vibrator;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
@@ -27,6 +28,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+
+import static android.R.attr.duration;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -95,6 +98,13 @@ public class MainActivity extends AppCompatActivity {
         searchForDevices();
     }
 
+    public void deadBaby(){
+        statusUpdate("YOU'RE FORGETTING SOMETHING!!!!!");
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(5000);
+
+    }
+
 
     private void searchForDevices ()
     {
@@ -156,7 +166,11 @@ public class MainActivity extends AppCompatActivity {
                 statusUpdate("Searching for services");
                 mBluetoothGatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                statusUpdate("Device disconnected");
+                Log.e("Device Disconected","Disconnect");
+                if(present){
+                    deadBaby();
+                }
+
             }
         }
 
@@ -190,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             String temp=sb.toString();
             present=temp.equals("01");
             Log.e("Package","Read characteristic value: " + temp);
-            statusUpdate("It worked");
+            statusUpdate("Package Present");
         }
     };
 
@@ -259,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 Log.w("BLE", msg);
                 if(present){
-                    mainText.setText("Package Present");
+                    mainText.setText(msg);
                 }
                 else{
                     mainText.setText("Package Absent");
